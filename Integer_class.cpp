@@ -23,14 +23,38 @@ public:
         this->ptr = new int(obj.getVal());
     }
 
-    void operator=(const Integer &obj)
+    Integer(Integer &&obj)
     {
-        this->ptr = new int(obj.getVal());
+        ptr = obj.ptr;
+        obj.ptr = nullptr;
     }
 
-    void operator=(int &x)
+    Integer &operator=(const Integer &obj)
     {
-        this->ptr = new int(x);
+        if (this != &obj)
+        {
+            delete ptr;
+            ptr = new int(obj.getVal());
+        }
+        return *this;
+    }
+
+    Integer &operator=(Integer &&obj) noexcept
+    {
+        if (this != &obj)
+        {
+            delete ptr;
+            ptr = obj.ptr;
+            obj.ptr = nullptr;
+        }
+        return *this;
+    }
+
+    Integer &operator=(int x)
+    {
+        delete ptr;
+        ptr = new int(x);
+        return *this;
     }
 
     void setVal(int x)
@@ -80,9 +104,9 @@ public:
         }
     }
 
-    Integer operator++()
+    Integer &operator++()
     {
-        this->setVal(this->getVal() + 1);
+        setVal(getVal() + 1);
         return *this;
     }
 
@@ -93,17 +117,17 @@ public:
         return temp;
     }
 
-    bool operator<(Integer obj)
+    bool operator<(const Integer &obj) const
     {
         return this->getVal() < obj.getVal();
     }
 
-    bool operator>(Integer obj)
+    bool operator>(const Integer &obj) const
     {
         return this->getVal() > obj.getVal();
     }
 
-    bool operator!=(Integer obj)
+    bool operator!=(const Integer &obj) const
     {
         return this->getVal() != obj.getVal();
     }
@@ -122,7 +146,7 @@ istream &operator>>(istream &in, Integer &obj)
     return in;
 }
 
-ostream &operator<<(ostream &out, Integer &obj)
+ostream &operator<<(ostream &out, const Integer &obj)
 {
     out << obj.getVal();
     return out;
